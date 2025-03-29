@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/articlesFragment">
+
+    <fragment
+        android:id="@+id/articlesFragment"
+        android:name="com.bsvillarraga.spaceflightnews.presentation.ui.articles.ArticlesFragment"
+        android:label="Space Flight News"
+        tools:layout="@layout/fragment_articles">
+        <action
+            android:id="@+id/action_articlesFragment_to_articleDetailFragment"
+            app:destination="@id/articleDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/articleDetailsFragment"
+        android:name="com.bsvillarraga.spaceflightnews.presentation.ui.articles.ArticleDetailFragment"
+        android:label=""
+        tools:layout="@layout/fragment_article_details">
+
+        <argument
+            android:name="articleId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+
+        <argument
+            android:name="newsSite"
+            app:argType="string" />
+    </fragment>
+</navigation>

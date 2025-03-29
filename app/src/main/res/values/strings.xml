@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Space Flight News</string>
+    <string name="images_context_description_article">Imagen del articulo</string>
+    <string name="loading">Cargando...</string>
+    <string name="images_description_loading">Cargando...</string>
+    <string name="published_at">Publicado el %s</string>
+    <string name="authors">Autores: %s</string>
+    <string name="article_detail_continue_reading">Continuar leyendo</string>
+    <string name="images_context_information">Imagen de información</string>
+    <string name="without_information">Lo sentimos, pero no encontramos información relevante para tu búsqueda. Intenta con otras palabras clave o proporciona más detalles.</string>
+    <string name="error_information">¡Ups, algo salió mal!</string>
+    <string name="btn_retry">Reintentar</string>
+</resources>
