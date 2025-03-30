@@ -17,10 +17,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bsvillarraga.spaceflightnews.R
 import com.bsvillarraga.spaceflightnews.core.common.Resource
 import com.bsvillarraga.spaceflightnews.core.extensions.toFormattedDate
+import com.bsvillarraga.spaceflightnews.core.extensions.toNetworkGlide
+import com.bsvillarraga.spaceflightnews.core.extensions.toResourceGlide
 import com.bsvillarraga.spaceflightnews.databinding.FragmentArticleDetailsBinding
 import com.bsvillarraga.spaceflightnews.domain.model.ArticleDetail
+import com.bsvillarraga.spaceflightnews.presentation.ui.articles.extensions.showState
 import com.bsvillarraga.spaceflightnews.presentation.ui.articles.viewmodel.ArticleDetailsViewModel
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -74,7 +76,6 @@ class ArticleDetailFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.article.collect { resource ->
-                    Log.e("TAG", "onViewCreated: $resource")
                     handleResource(resource)
                 }
             }
@@ -104,31 +105,24 @@ class ArticleDetailFragment : Fragment() {
                 }
             }
 
-            Glide.with(requireContext())
-                .load(it.imageUrl)
-                .centerCrop()
-                .into(binding.headerImage)
-        } ?: Log.e("loadData", "Muestra mensaje de sin datos")
+            binding.headerImage.toNetworkGlide(requireContext(), it.imageUrl)
+        }
 
         hideLoading()
     }
 
     private fun hideLoading() {
-        binding.motionLayout.visibility = View.VISIBLE
-        binding.contentLoading.root.visibility = View.GONE
+        binding.showState(showLoading = false)
     }
 
     private fun showLoading() {
-        binding.motionLayout.visibility = View.GONE
-        binding.contentLoading.root.visibility = View.VISIBLE
+        binding.showState(showLoading = true)
 
         binding.contentLoading.apply {
-            Glide.with(requireContext())
-                .asGif()
-                .load(R.drawable.astronaut_with_space_shuttle_loader)
-                .centerCrop()
-                .override(ivLoading.width, ivLoading.height)
-                .into(ivLoading)
+            ivLoading.toResourceGlide(
+                requireContext(),
+                R.drawable.astronaut_with_space_shuttle_loader
+            )
         }
     }
 

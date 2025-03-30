@@ -23,10 +23,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bsvillarraga.spaceflightnews.R
 import com.bsvillarraga.spaceflightnews.core.common.Resource
+import com.bsvillarraga.spaceflightnews.core.extensions.init
+import com.bsvillarraga.spaceflightnews.core.extensions.onLoadMoreScrollListener
+import com.bsvillarraga.spaceflightnews.core.extensions.queryTextListener
+import com.bsvillarraga.spaceflightnews.core.extensions.toResourceGlide
 import com.bsvillarraga.spaceflightnews.databinding.FragmentArticlesBinding
 import com.bsvillarraga.spaceflightnews.domain.model.Article
 import com.bsvillarraga.spaceflightnews.presentation.permission.PermissionChainManager
@@ -34,8 +36,8 @@ import com.bsvillarraga.spaceflightnews.presentation.permission.PermissionHandle
 import com.bsvillarraga.spaceflightnews.presentation.permission.PermissionRequest
 import com.bsvillarraga.spaceflightnews.presentation.permission.PermissionType
 import com.bsvillarraga.spaceflightnews.presentation.ui.articles.adapter.ArticleAdapter
+import com.bsvillarraga.spaceflightnews.presentation.ui.articles.extensions.showState
 import com.bsvillarraga.spaceflightnews.presentation.ui.articles.viewmodel.ArticlesViewModel
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -80,19 +82,9 @@ class ArticlesFragment : Fragment(), MenuProvider {
             }
         )
 
-        binding.rcvArticles.apply {
-            adapter = this@ArticlesFragment.adapter
-            layoutManager = LinearLayoutManager(requireContext())
-
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
-                    if (!recyclerView.canScrollVertically(1)) {
-                        loadMoreArticle()
-                    }
-                }
-            })
+        binding.rcvArticles.init(this@ArticlesFragment.adapter, requireContext())
+        binding.rcvArticles.onLoadMoreScrollListener {
+            loadMoreArticle()
         }
     }
 
@@ -131,62 +123,40 @@ class ArticlesFragment : Fragment(), MenuProvider {
             showWithoutInformation()
         } else {
             binding.contentInformation.root.visibility = View.GONE
+            hideLoading()
         }
-
-        hideLoading()
     }
 
     private fun showWithoutInformation() {
-        binding.contentInformation.root.visibility = View.VISIBLE
-        binding.rcvArticles.visibility = View.GONE
-
-        binding.contentInformation.apply {
-            contentError.root.visibility = View.GONE
-            contentWithoutInformation.root.visibility = View.VISIBLE
-
-            Glide.with(requireContext())
-                .load(R.drawable.without_information)
-                .centerCrop()
-                .override(ivInformation.width, ivInformation.height)
-                .into(ivInformation)
-        }
+        binding.showState(showNoInfo = true)
+        binding.contentInformation.ivInformation.toResourceGlide(
+            requireContext(),
+            R.drawable.without_information
+        )
     }
 
     private fun showError() {
-        binding.rcvArticles.visibility = View.GONE
-        binding.contentLoading.root.visibility = View.GONE
-        binding.contentInformation.root.visibility = View.VISIBLE
-
+        binding.showState(showError = true)
         binding.contentInformation.apply {
-            contentError.root.visibility = View.VISIBLE
-            contentWithoutInformation.root.visibility = View.GONE
+            ivInformation.toResourceGlide(requireContext(), R.drawable.error)
 
-            Glide.with(requireContext())
-                .load(R.drawable.error)
-                .centerCrop()
-                .override(ivInformation.width, ivInformation.height)
-                .into(ivInformation)
+            contentError.btnRetry.setOnClickListener {
+                viewModel.fetchArticles(reload = true)
+            }
         }
-
     }
 
     private fun hideLoading() {
-        binding.contentLoading.root.visibility = View.GONE
-        binding.rcvArticles.visibility = View.VISIBLE
+        binding.showState(showLoading = false)
     }
 
     private fun showLoading() {
-        binding.rcvArticles.visibility = View.GONE
-        binding.contentLoading.root.visibility = View.VISIBLE
-        binding.contentInformation.root.visibility = View.GONE
-
+        binding.showState(showLoading = true)
         binding.contentLoading.apply {
-            Glide.with(requireContext())
-                .asGif()
-                .load(R.drawable.astronaut_with_space_shuttle_loader)
-                .centerCrop()
-                .override(ivLoading.width, ivLoading.height)
-                .into(ivLoading)
+            ivLoading.toResourceGlide(
+                requireContext(),
+                R.drawable.astronaut_with_space_shuttle_loader
+            )
         }
     }
 
@@ -206,22 +176,14 @@ class ArticlesFragment : Fragment(), MenuProvider {
         searchView = searchMenuItem?.actionView as SearchView
         searchView?.queryHint = "Buscar..."
 
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let {
-                    viewModel.onSearchQueryChanged(it)
-                }
-                return true
+        searchView?.queryTextListener(
+            onSubmit = { query ->
+                viewModel.onSearchQueryChanged(query)
+            },
+            onTextChanged = { query ->
+                viewModel.onSearchQueryChanged(query ?: "")
             }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText.isNullOrEmpty()) {
-                    viewModel.onSearchQueryChanged(newText ?: "")
-                }
-
-                return true
-            }
-        })
+        )
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
