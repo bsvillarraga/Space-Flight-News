@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
+/**
+ * Función de extensión para convertir una cadena de fecha en un formato legible.
+ * */
 fun String.toFormattedDate(): String {
     return try {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())

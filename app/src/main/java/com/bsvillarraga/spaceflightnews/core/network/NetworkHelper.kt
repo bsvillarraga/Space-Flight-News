@@ -5,6 +5,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import javax.inject.Inject
 
+/**
+ * Helper para verificar la disponibilidad de red en el dispositivo.
+ * */
 class NetworkHelper @Inject constructor(private val context: Context) {
     fun isNetworkAvailable(): Boolean {
         val connectivityManager =

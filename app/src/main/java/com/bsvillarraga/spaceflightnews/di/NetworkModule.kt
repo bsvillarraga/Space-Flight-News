@@ -54,6 +54,10 @@ object NetworkModule {
             .build()
     }
 
+    /**
+     * Provider de los servicios de la API.
+     * */
+
     @Provides
     @Singleton
     fun provideNetworkHelper(@ApplicationContext context: Context): NetworkHelper {

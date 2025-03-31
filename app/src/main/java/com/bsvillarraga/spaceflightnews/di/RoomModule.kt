@@ -25,6 +25,10 @@ object RoomModule {
     fun provideAppDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, SpaceFlightNewsDb::class.java, SPACE_FLIGHT_NEW).build()
 
+    /**
+     * Provider de los servicios de la API.
+     * */
+
     @Singleton
     @Provides
     fun providePaginationDao(db: SpaceFlightNewsDb) = db.paginationDao()
