@@ -10,6 +10,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * En este archivo se realiza la inyección de dependencias de la base de datos
+ * y acceso a los DAOs
+ * */
+
 @Module
 @InstallIn(SingletonComponent::class)
 object RoomModule {

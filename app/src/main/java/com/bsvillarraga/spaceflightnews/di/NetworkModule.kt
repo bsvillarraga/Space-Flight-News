@@ -18,6 +18,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
+/**
+ * En este archivo se la inyección de dependencias de la librería Retrofit,
+ * configuración de la url base, cliente OkHttpClient personalizado,
+ * y provider de los servicios de la API.
+ * */
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {

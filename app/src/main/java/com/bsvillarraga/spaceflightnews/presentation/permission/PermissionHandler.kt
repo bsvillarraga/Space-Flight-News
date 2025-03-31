@@ -10,18 +10,39 @@ import androidx.fragment.app.Fragment
 import com.bsvillarraga.spaceflightnews.core.extensions.isPermissionGranted
 import com.bsvillarraga.spaceflightnews.presentation.ui.dialogs.showCustomDialog
 
+/**
+ * Clase encargada de gestionar las solicitudes de permisos en un `Fragment`.
+ *
+ * "PermissionHandler" permite solicitar permisos y manejar automáticamente los resultados,
+ * incluyendo permisos concedidos, denegados y denegados permanentemente.
+ *
+ * @param fragment Fragment en el cual se solicitarán los permisos.
+ */
+
 class PermissionHandler(
     private val fragment: Fragment
 ) {
+    // Callbacks para manejar los distintos resultados de la solicitud de permisos
     private var onPermissionGranted: (() -> Unit)? = null
     private var onPermissionDenied: (() -> Unit)? = null
     private var onPermissionDeniedPermanently: (() -> Unit)? = null
 
+    // Launcher para solicitar múltiples permisos y manejar la respuesta
     private val permissionLauncher =
         fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             handlePermissionsResult(permissions)
         }
 
+
+    /**
+     * Solicita los permisos especificados.
+     *
+     * @param permissions Array de permisos a solicitar.
+     * @param onGranted Callback ejecutado si todos los permisos son concedidos.
+     * @param onDenied (Opcional) Callback ejecutado si algún permiso es denegado.
+     * @param onDeniedPermanently (Opcional) Callback ejecutado si el usuario deniega
+     * los permisos permanentemente (marcando "No volver a preguntar").
+     */
     fun requestPermissions(
         permissions: Array<String>,
         onGranted: () -> Unit,
@@ -40,6 +61,10 @@ class PermissionHandler(
         }
     }
 
+    /**
+     * Maneja los resultados de la solicitud de permisos.
+     *indicando si fue concedido "true" o denegado "false".
+     */
     private fun handlePermissionsResult(permissions: Map<String, Boolean>) {
         val context = fragment.requireContext()
 
@@ -62,6 +87,12 @@ class PermissionHandler(
         }
     }
 
+    /**
+     * Muestra un diálogo para guiar al usuario a la configuración de la aplicación
+     * cuando los permisos fueron denegados permanentemente.
+     *
+     * @param context Contexto necesario para mostrar el diálogo.
+     */
     private fun showPermissionSettingsDialog(context: Context) {
         showCustomDialog(
             context = context,

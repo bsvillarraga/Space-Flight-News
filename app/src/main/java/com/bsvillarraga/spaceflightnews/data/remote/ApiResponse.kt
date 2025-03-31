@@ -5,6 +5,12 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.net.SocketTimeoutException
 
+/**
+ * Representa la transformación de los datos retornados por ApiHelper.
+ *
+ * @param T Tipo de datos esperado en una respuesta exitosa.
+ */
+
 sealed class ApiResponse<T> {
     companion object {
         fun <T> create(error: Throwable): ApiErrorResponse<T> {
@@ -22,7 +28,7 @@ sealed class ApiResponse<T> {
                 }
 
                 else -> {
-                    ApiErrorResponse("4", "error desconocido", error)
+                    ApiErrorResponse("4", "Error desconocido", error)
                 }
             }
         }

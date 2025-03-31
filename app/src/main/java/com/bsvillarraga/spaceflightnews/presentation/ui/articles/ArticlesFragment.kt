@@ -20,8 +20,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bsvillarraga.spaceflightnews.R
 import com.bsvillarraga.spaceflightnews.core.common.Resource
@@ -39,7 +37,6 @@ import com.bsvillarraga.spaceflightnews.presentation.ui.articles.adapter.Article
 import com.bsvillarraga.spaceflightnews.presentation.ui.articles.extensions.showState
 import com.bsvillarraga.spaceflightnews.presentation.ui.articles.viewmodel.ArticlesViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ArticlesFragment : Fragment(), MenuProvider {
@@ -70,11 +67,13 @@ class ArticlesFragment : Fragment(), MenuProvider {
         observeArticle()
     }
 
+    //Configuración del menú de búsqueda
     private fun setupSearch() {
         val menuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
+    //Configuración del RecyclerView y la paginación
     private fun setupRecyclerView() {
         adapter = ArticleAdapter(
             onItemClicked = { article ->
@@ -88,26 +87,26 @@ class ArticlesFragment : Fragment(), MenuProvider {
         }
     }
 
+    //Carga más artículos cuando se alcanza el final de la lista.
     private fun loadMoreArticle() {
         if (adapter.itemCount == 0) return
         adapter.setLoading(true)
         viewModel.fetchArticles(loadMore = true)
     }
 
+    //Realiza la primera carga de artículos.
     private fun fetchArticle() {
         viewModel.fetchArticles()
     }
 
+    //Observa los cambios en la lista de artículos y actualiza la UI.
     private fun observeArticle() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.articles.collect { resource ->
-                    handleResource(resource)
-                }
-            }
+        viewModel.articles.observe(viewLifecycleOwner) { resource ->
+            handleResource(resource)
         }
     }
 
+    //Maneja el estado de la respuesta de artículos.
     private fun handleResource(resource: Resource<List<Article>>) {
         when (resource) {
             is Resource.Error -> showError()
@@ -116,6 +115,7 @@ class ArticlesFragment : Fragment(), MenuProvider {
         }
     }
 
+    //Carga los artículos en el adaptador.
     private fun loadData(articles: List<Article>?) {
         adapter.submitList(articles)
 
@@ -127,6 +127,7 @@ class ArticlesFragment : Fragment(), MenuProvider {
         }
     }
 
+    //Muestra la pantalla de "sin información disponible".
     private fun showWithoutInformation() {
         binding.showState(showNoInfo = true)
         binding.contentInformation.ivInformation.toResourceGlide(
@@ -135,6 +136,7 @@ class ArticlesFragment : Fragment(), MenuProvider {
         )
     }
 
+    //Muestra un mensaje de error cuando ocurre un problema en la carga de datos.
     private fun showError() {
         binding.showState(showError = true)
         binding.contentInformation.apply {
@@ -146,10 +148,12 @@ class ArticlesFragment : Fragment(), MenuProvider {
         }
     }
 
+    //Oculta el estado de carga.
     private fun hideLoading() {
         binding.showState(showLoading = false)
     }
 
+    //Muestra el estado de carga.
     private fun showLoading() {
         binding.showState(showLoading = true)
         binding.contentLoading.apply {
@@ -160,6 +164,7 @@ class ArticlesFragment : Fragment(), MenuProvider {
         }
     }
 
+    //Navega a la pantalla de detalles del artículo seleccionado.
     private fun navigateArticlesToArticleDetail(article: Article) {
         findNavController().navigate(
             ArticlesFragmentDirections.actionArticlesFragmentToArticleDetailFragment(
@@ -197,6 +202,7 @@ class ArticlesFragment : Fragment(), MenuProvider {
         }
     }
 
+    //Solicita permisos para la búsqueda por voz.
     private fun requestRecordAudio() {
         PermissionChainManager(permissionHandler)
             .addPermission(
@@ -210,6 +216,7 @@ class ArticlesFragment : Fragment(), MenuProvider {
             .execute()
     }
 
+    //Inicia la búsqueda por voz.
     private fun startVoiceSearch() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
@@ -229,6 +236,7 @@ class ArticlesFragment : Fragment(), MenuProvider {
         }
     }
 
+    //Maneja el resultado de la búsqueda por voz
     private val voiceSearchLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {

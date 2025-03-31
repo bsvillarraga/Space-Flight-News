@@ -6,6 +6,10 @@ import com.bsvillarraga.spaceflightnews.data.local.entities.PaginationEntity
 import com.bsvillarraga.spaceflightnews.data.model.PaginationDto
 import javax.inject.Inject
 
+/**
+ * Maneja la actualización de la paginación de la base de datos local
+ * y proporciona la siguiente paginación.
+ * */
 class PaginationManager @Inject constructor(private val paginationDao: PaginationDao) {
     suspend fun getCurrentOffset(): Int? {
         return paginationDao.getPagination()?.offset

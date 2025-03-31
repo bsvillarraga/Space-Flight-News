@@ -16,11 +16,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/**
+ * Implementación del repositorio para manejar la obtención de artículos desde una API remota.
+ *
+ * Esta clase se encarga de realizar las llamadas a la API mediante "ArticlesApiClient",
+ * gestionar la paginación con "PaginationManager" y manejar respuestas de la API de forma segura
+ * utilizando "ApiHelper".
+ *
+ * @Importante: los parametros fueron inyectados desde el módulo DI (NetworkModule).
+ */
+
 class ArticleRepositoryImpl @Inject constructor(
     private val api: ArticlesApiClient,
     private val apiHelper: ApiHelper,
     private val paginationManager: PaginationManager
 ) : ArticleRepository {
+
+    /**
+     * Obtiene la lista de artículos desde la API.
+     * @param query Consulta opcional para filtrar artículos.
+     */
     override suspend fun getArticles(
         query: String?
     ): Resource<List<Article>> {
@@ -42,6 +57,10 @@ class ArticleRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Obtiene un artículo específico por su ID.
+     * @param articleId ID del artículo a obtener.
+     */
     override suspend fun getArticleById(articleId: Long): Resource<ArticleDetail> {
         return withContext(Dispatchers.IO) {
             val response: ApiResponse<ArticleDto> =

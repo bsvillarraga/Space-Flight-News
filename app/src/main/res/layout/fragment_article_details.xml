@@ -12,6 +12,10 @@
         layout="@layout/loading"
         android:visibility="gone" />
 
+    <include
+        android:id="@+id/contentInformation"
+        layout="@layout/information" />
+
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/motionLayout"
         android:layout_width="match_parent"

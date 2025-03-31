@@ -20,8 +20,15 @@ fun FragmentArticlesBinding.showState(
 }
 
 fun FragmentArticleDetailsBinding.showState(
-    showLoading: Boolean = false
+    showLoading: Boolean = false,
+    showError: Boolean = false,
 ) {
-    motionLayout.isVisible = !showLoading
+    motionLayout.isVisible = !(showLoading || showError)
     contentLoading.root.isVisible = showLoading
+    contentInformation.root.isVisible = showError
+
+    contentInformation.apply {
+        contentError.root.isVisible = showError
+        contentWithoutInformation.root.isVisible = false
+    }
 }
