@@ -7,7 +7,7 @@ package com.bsvillarraga.spaceflightnews.presentation.permission
  * en función de la respuesta del usuario.
  *
  * @property type Tipo de permiso a solicitar (definido en [PermissionType]).
- * @property onGranted Acción a ejecutar cuando el permiso es otorgado.
+ * @property onGranted Acción a ejecutar cuando el permiso es otorgado.8
  * @property onDenied Acción a ejecutar cuando el permiso es denegado temporalmente.
  * @property onDeniedPermanently Acción a ejecutar cuando el usuario deniega el permiso de forma permanente.
  */
